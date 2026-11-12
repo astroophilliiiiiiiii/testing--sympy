@@ -8,7 +8,7 @@ from sympy.utilities.misc import as_int
 
 
 def digits(n: SupportsIndex, b: SupportsIndex = 10, digits: int | None = None) -> list[int]:
-    """
+    '''
     Return a list of the digits of ``n`` in base ``b``. The first
     element in the list is ``b`` (or ``-b`` if ``n`` is negative).
 
@@ -51,12 +51,12 @@ def digits(n: SupportsIndex, b: SupportsIndex = 10, digits: int | None = None) -
     See Also
     ========
     sympy.core.intfunc.num_digits, count_digits
-    """
+    '''
 
     b = as_int(b)
     n = as_int(n)
     if b < 2:
-        raise ValueError("b must be greater than 1")
+        raise ValueError('b must be greater than 1')
     else:
         x, y = abs(n), []
         while x >= b:
@@ -68,14 +68,14 @@ def digits(n: SupportsIndex, b: SupportsIndex = 10, digits: int | None = None) -
         ndig = len(y) - 1
         if digits is not None:
             if ndig > digits:
-                raise ValueError(f"For {n}, at least {ndig} digits are needed.")
+                raise ValueError(f'For {n}, at least {ndig} digits are needed.')
             elif ndig < digits:
-                y[1:1] = [0]*(digits - ndig)
+                y[1:1] = [0] * (digits - ndig)
         return y
 
 
 def count_digits(n: SupportsIndex, b: SupportsIndex = 10) -> defaultdict[int, int]:
-    """
+    '''
     Return a dictionary whose keys are the digits of ``n`` in the
     given base, ``b``, with keys indicating the digits appearing in the
     number and values indicating how many times that digit appeared.
@@ -112,7 +112,7 @@ def count_digits(n: SupportsIndex, b: SupportsIndex = 10) -> defaultdict[int, in
     See Also
     ========
     sympy.core.intfunc.num_digits, digits
-    """
+    '''
     n = as_int(n)
     b = as_int(b)
     rv = defaultdict(int, multiset(digits(n, b)).items())
@@ -121,7 +121,7 @@ def count_digits(n: SupportsIndex, b: SupportsIndex = 10) -> defaultdict[int, in
 
 
 def is_palindromic(n: SupportsIndex, b: SupportsIndex = 10) -> bool:
-    """return True if ``n`` is the same when read from left to right
+    '''return True if ``n`` is the same when read from left to right
     or right to left in the given base, ``b``.
 
     Examples
@@ -150,5 +150,42 @@ def is_palindromic(n: SupportsIndex, b: SupportsIndex = 10) -> bool:
     >>> oct(121), is_palindromic(121, 8) and is_palindromic(121)
     ('0o171', True)
 
-    """
+    '''
     return _palindromic(digits(n, b), 1)
+
+
+def digital_root(n: SupportsIndex, b: SupportsIndex = 10) -> int:
+    '''
+    Return the digital root of a non‑negative integer ``n`` in base ``b``.
+
+    The digital root is obtained by repeatedly summing the base‑``b``
+    digits of ``n`` until a single digit (i.e. a value ``< b``) remains.
+
+    Parameters
+    ----------
+    n : integer (non‑negative)
+        The number whose digital root is required.
+    b : integer, optional (default 10)
+        The base in which the digits are taken.  Must satisfy ``b >= 2``.
+
+    Returns
+    -------
+    int
+        The digital root of ``n`` in base ``b``.
+
+    Raises
+    ------
+    ValueError
+        If ``n`` is negative or ``b`` is less than 2.
+    '''
+    n = as_int(n)
+    b = as_int(b)
+    if n < 0:
+        raise ValueError('n must be non‑negative')
+    if b < 2:
+        raise ValueError('b must be greater than 1')
+    # Fast path for numbers already single digit in the given base
+    while n >= b:
+        # sum the digits of n in base b
+        n = sum(digits(n, b)[1:])
+    return n
